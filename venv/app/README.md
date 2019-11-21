@@ -15,20 +15,3 @@ https://help.fortinet.com/cli/fos60hlp/60/Content/FortiOS/fortiOS-cli-ref/config
 ##########################
 224.0.0.0 - 255.255.255.255 , 127.0.0.0 - 127.255.255.255 , 0.0.0.0 - 0.255.255.255 cannot be blocked !
 ##########################
-
-
-config system geoip-override
-    edit {name}
-    # Configure geographical location mapping for IP address(es) to override mappings from FortiGuard.
-        set name {string}   Location name. size[63]
-        set description {string}   Description. size[127]
-        set country-id {string}   Two character Country ID code. size[2]
-        config ip-range
-            edit {id}
-            # Table of IP ranges assigned to country.
-                set id {integer}   ID number for individual entry in the IP-Range table. range[0-65535]
-                set start-ip {ipv4 address}   Starting IP address, inclusive, of the address range (format: xxx.xxx.xxx.xxx).
-                set end-ip {ipv4 address}   Final IP address, inclusive, of the address range (format: xxx.xxx.xxx.xxx).
-            next
-    next
-end
