@@ -1,17 +1,22 @@
 ##
 # Date: 11/16/2019
-# Program Name: BadTown
-# Description: Creating a Virtual Country aka. BadTown
+# Program Name: Virtual Country
+# Description: Creating a Virtual Country
 # Author: Damon Sawyer
 # Extras: Comparing know IP list to a Dynamic IP list via get request
 ##
 import requests
 import ipaddress
 
+# The default file is inthe current directory
 myIPsPath = "./my_ips"
+# Using Firehol IPlist as an example
 dynamicListURI = "https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset"
+# The the script file is output to the current directory
 scriptFilePath = "./virtualcountry.txt"
-print("Welcome to Virtual Country aka Bad Town")
+
+# Get user input
+print("Welcome to Virtual Country")
 print("Please enter the url of an IP list(enter d for default): ")
 urlInput = input();
 if urlInput != 'd':
@@ -30,11 +35,12 @@ if scriptPathInput != 'd':
     scriptFilePath = scriptPathInput
 print("Script output file path: " + scriptFilePath)
 
+# Declare global variables
 myIPArr = {}
 checkcount = 0
 gotContent = requests.get(dynamicListURI)
 
-
+# Main Function
 def mainFun():
     with open(myIPsPath) as file:
          myIPArr = list(dict.fromkeys(file.read().split('\n')))
@@ -44,23 +50,26 @@ def mainFun():
     # Overwrite file
     scriptFile = open(scriptFilePath, "w")
 
-    # Just playing it safe. The range is actually 0-65535. Do you really need more than 65k?
+    # Setting limits to 65k flat
     maxIPRangeTables = 65000
-    # First entry will be 1 not 0 for the network engineers
+    # First entry will be 1 not 0 since users usually start with 1
     i = 1
     # User Inputs. Will fail if unsupported characters are included
-    geoIPName = "bad_town"
+    geoIPName = "virtual_country"
     geoDescription = "List of bad IPs"
 
     print("# Building script....")
     print("Known IPs that match up with External IPs: ")
 
+    # Writing to  script file
     scriptFile.write("config system geoip-override" + "\n")
     scriptFile.write("edit " + "\"" + geoIPName + "\"" + "\n")
     scriptFile.write("set description " + "\"" + geoDescription + "\"" + "\n")
     scriptFile.write("config ip-range\n")
     for externalip in contentArr:
-        # Fail if IP is not the following format x.x.x.x/x
+        # Adds the subet 32 if the item does not contain a "#", 
+        # the max range has not been met and the split of "." returns 4 indexes
+        # Then if there is already not a "/" within the item
         if externalip.split('#').__len__() < 2 and i <= maxIPRangeTables and externalip.split('.').__len__() == 4:
             if (externalip.split('/').__len__() > 1) == False:
                 externalip = externalip + "/32"
@@ -80,6 +89,7 @@ def mainFun():
     scriptFile.write("end\n")
     scriptFile.close()
 
+# Checks if the subnet is useable
 def isUseableIP(externalip):
     extNet = ipaddress.ip_network(externalip)
     badZoneA = ipaddress.ip_network('0.0.0.0/8')
@@ -88,10 +98,10 @@ def isUseableIP(externalip):
     if extNet.supernet_of(badZoneA) or extNet.supernet_of(badZoneB) or extNet.supernet_of(badZoneC) or \
             extNet.subnet_of(badZoneA) or extNet.subnet_of(badZoneB) or extNet.subnet_of(badZoneC):
         return False
-
     return True
 
 # This needs to be refactored
+# Checks if the if the item is actually an IP
 def isIP(externalip):
     octet = 0
     isIPaddress = True
@@ -114,7 +124,7 @@ def isIP(externalip):
         octet = octet + 1
     return isIPaddress
 
-
+# Converts Subnets to Ranges
 def netToRange(ipNet):
     # print("Converting Subnets to IP ranges")
     startIP = ipaddress.IPv4Network(ipNet)[0]
@@ -122,9 +132,8 @@ def netToRange(ipNet):
     # print(startIP , endIP)
     return startIP, endIP
 
-
+# Compares an external http IP list to an internal file IP list
 def compareLists(externalip, myIPArr):
-
     for myip in myIPArr:
         if  myip.split('.').__len__() == 4:
             if (myip.split('/').__len__() > 1) == False:
@@ -136,4 +145,5 @@ def compareLists(externalip, myIPArr):
             if externalNet.subnet_of(myNet) or externalNet.supernet_of(myNet):
                 print("Known IP: " + myip + " matches " + "External IP: " + externalip)
 
+ # Run
 mainFun()
