@@ -1,12 +1,7 @@
-With FortiOS 5.6 and 6.0, to create a large custom list of IPs that can be used as an address object,
-you need to create address objects for each subnet and assign, at most, 300(For lower-end models)
-objects per address group. There's also a max of 5000 address objects for lower-end models. If you're using a
-large granular list or several lists you might run into some serious issues. To simplify things I
-built this tool using the system geoip-override. Since you can add up to 65,000+ ranges per custom geography address
-and create a single address object for a geography address, address object limitations are of no concern here.
-IPv4 addressing is used in this tool.
+This tool gets large IPv4 lists via webrequests and converts them into a custom geography address. 
+There is a limitation of 65536[0-65535] ranges. 
 
-The FortiGate API will be integrated soon to automate things.
+The FortiGate API will be integrated soon for error checking and automating the config.
 
 
 We simply build a geoip-override script using python.
