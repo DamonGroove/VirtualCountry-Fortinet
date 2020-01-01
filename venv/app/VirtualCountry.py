@@ -101,7 +101,7 @@ def isUseableIP(externalip):
     return True
 
 # This needs to be refactored
-# Checks if the if the item is actually an IP
+# Checks if the item is actually an IP
 def isIP(externalip):
     octet = 0
     isIPaddress = True
