@@ -2,7 +2,7 @@
 # Date: 11/16/2019
 # Program Name: Virtual Country
 # Description: Creating a Virtual Country
-# Author: Damon Sawyer
+# Author: Damon Groove
 # Extras: Comparing know IP list to a Dynamic IP list via get request
 ##
 import requests
